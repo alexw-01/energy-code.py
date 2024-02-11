@@ -1,7 +1,6 @@
 #import libraries
 from pitop import Pitop, DriveController, Camera, PanTiltController
 from time import sleep
-from pitop.camera import Camera
 from signal import pause
 from pitop.processing.algorithms.line_detect import process_frame_for_line
 camera.on_frame = send_image
