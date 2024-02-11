@@ -1,0 +1,11 @@
+# import libraries
+from pitop.pma import UltrasonicSensor
+from time import sleep
+
+# initialize the component
+Usensor = UltrasonicSensor ("A1")
+
+# endless loop
+while True:
+  print(Usensor.distance)
+  sleep(.1)
