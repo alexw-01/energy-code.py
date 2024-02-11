@@ -1,0 +1,56 @@
+#import libraries
+from pitop import Pitop, DriveController, Camera, PanTiltController
+from time import sleep
+from pitop.camera import Camera
+from signal import pause
+from pitop.processing.algorithms.line_detect import process_frame_for_line
+camera.on_frame = send_image
+
+# creates robot()
+robot = Pitop()
+robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
+robot.add_component(Camera())
+robot.add_component(PanTiltController(servo_pan_port= "S0", servo_tilt_port= "S3"))
+
+# takes frame from camera, processes it
+def process_new_camera_frame(camera_frame):
+    line_data = process_frame_for_line(camera_frame) # process the image and see if we can find the line center.
+    robot_view = line_data.robot_view
+    center = line_data.line_center
+    send_image(robot_view)       
+    
+    if center is None:            
+        print(f"Line is lost!")
+        robot.drive.stop()
+    else:
+        follow_line(center)
+        
+# function to help the robot follow the line
+def follow_line(center):
+    x, y = center
+    forward_speed = FORWARD_SPEED_MAX    # Set the forward speed to maximum
+    robot.drive.forward(forward_speed, hold=True) # Drive forward @ speed
+    turn_speed = TURN_SPEED_MAX         # Set the turn speed to our maximum
+    
+    if x < 0:
+        robot.drive.left(turn_speed)  
+    elif x > 0:
+        robot.drive.right(turn_speed)   
+    elif x == 0:
+        robot.drive.stop_rotation()     
+
+
+def set_servo_angles(pan, tilt):
+    robot.pan_tilt.pan_servo.target_angle = pan
+    robot.pan_tilt.tilt_servo.target_angle = tilt
+    
+         
+#we have put the servo angle settings into a function to organise our code better
+set_servo_angles(pan=0, tilt=30)
+
+FORWARD_SPEED_MAX = 0.25  # You can modify this speed if you want
+TURN_SPEED_MAX = 0.1      # You can modify this speed if you want
+
+robot.camera.on_frame = process_new_camera_frame
+
+pause()
