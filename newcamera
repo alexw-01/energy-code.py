@@ -1,0 +1,53 @@
+#import libraries
+from pitop import Pitop, DriveController, Camera, PanTiltController
+from time import sleep
+from signal import pause
+from pitop.processing.algorithms.line_detect import process_frame_for_line
+camera.on_frame = send_image
+
+# creates robot()
+robot = Pitop()
+robot.add_component(DriveController(left_motor_port="M3", right_motor_port="M0"))
+robot.add_component(Camera())
+robot.add_component(PanTiltController(servo_pan_port= "S0", servo_tilt_port= "S3"))
+
+# sends the robot's view to the user's screen (I think if connected to VNC or directly????)
+def send_robot_view(robot_view):
+  cv2.imshow("Robot", robot_view)
+  cv2.waitKey(1) # this just makes it so it doesn't feed an endless stream of frames
+
+# actually processes the center of the line (not sure if parameter is right, troubleshoot if necessary)
+def process_new_camera_frame(camera_frame)
+  line_data = process_frame_for_line(cam.get_frame)
+  robot_view = line_data.robot_view
+  center = line_data.line_center
+  send_image(robot_view)
+
+  if center is None:
+    robot.drive.stop()
+  else:
+    follow_line(center)
+
+def follow_line(center):
+    x, y = center
+    forward_speed = FORWARD_SPEED_MAX    # Set the forward speed to maximum
+    robot.drive.forward(forward_speed, hold=True) # Drive forward @ speed
+    turn_speed = TURN_SPEED_MAX         # Set the turn speed to our maximum
+    
+    if x < 0:
+        robot.drive.left(turn_speed)  
+    elif x > 0:
+        robot.drive.right(turn_speed)   
+    elif x == 0:
+        robot.drive.stop_rotation()     
+
+########################################## ONLY MEANT TO SEE CAMERA VIEW ################################################
+# sends the robot's view to the user's screen (I think if connected to VNC or directly????)
+def send_robot_view(robot_view):
+  cv2.imshow("Robot", robot_view)
+  cv2.waitKey(1) # this just makes it so it doesn't feed an endless stream of frames
+
+#########################################################################################################################
+while True:
+  robot.camera.on_frame = process_new_camera_frame
+  sleep(.1)
