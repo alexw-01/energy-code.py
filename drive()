@@ -1,0 +1,12 @@
+from pitop import Pitop, DriveController
+
+# sets up the robot, initializes the drive() function of the robot ------>
+robot = Pitop()
+drive = DriveController(left_motor_port = "M3", right_motor_port = "M0")
+robot.add_component(drive)
+
+# all basic movement functions
+robot.drive.forward(#)
+robot.drive.right(#)
+robot.drive.left(#)
+robot.drive. (#)
